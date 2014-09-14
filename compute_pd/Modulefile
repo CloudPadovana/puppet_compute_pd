@@ -1,0 +1,10 @@
+name    'compute_pd'
+version '1.0.0'
+author  'C. Aiftimiei'
+license 'Apache License 2.0'
+summary 'OpenStack Havana Compute Node configuration for the Cloud area Padovana'
+description  'Puppet module to install and configure an Openstack Havana Compute node for the CloudArea Padovana'
+
+## Add dependencies
+dependency 'puppetlabs/firewall', '>=0.0.4'
+dependency 'duritong/sysctl', '>=0.0.2'
