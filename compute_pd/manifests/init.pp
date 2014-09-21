@@ -27,6 +27,7 @@ class compute_pd {
 
   Sysctl {
     notify  => Exec["load-sysctl"],
+    require     => Class['compute_pd::libvirt'],
   }  
 
   $my_sysctl_settings = {
@@ -39,6 +40,16 @@ class compute_pd {
   exec { load-sysctl:
     command => "/sbin/sysctl -p /etc/sysctl.conf",
     refreshonly => true
+  }
+#
+
+  file {'metadata_agent':
+    source      => 'puppet:///modules/compute_pd/agent.py',
+    path        => '/usr/lib/python2.6/site-packages/neutron/agent/metadata/agent.py',
+    backup      => true,
+    notify      => [ Service["neutron-openvswitch-agent"], Service["openstack-nova-compute"] ],
+    require     => Package['openstack-neutron-openvswitch'],
+    subscribe   => Class['compute_pd::configure'],
   }
 
   file {'/etc/neutron/plugin.ini':
@@ -94,9 +105,28 @@ class compute_pd {
     require => Service["openvswitch"],
   }  
 
+# mount glusterfs volume
+
+  file { 'nova-instances':
+    path        => "/var/lib/nova/instances",
+    ensure      => directory,
+    require     => Package["openstack-nova-common"],
+  }
+
+  mount { "/var/lib/nova/instances":
+    ensure      => mounted,
+    device      => "192.168.61.100:/$compute_pd::params::volume_glusterfs",
+    atboot      => true,
+    fstype      => "glusterfs",
+    options     => "defaults,_netdev,backup-volfile-servers=192.168.61.101",
+    require     => [ File["nova-instances"], Package ["glusterfs-fuse"] ]
+  }
+
+# execution order
+
+  Clas['compute_pd::firewall'] -> Class['compute_pd::install']
+  Class['compute_pd::install'] -> Class['compute_pd::configure']
   Class['compute_pd::configure'] -> File['/etc/neutron/plugin.ini']
   Service["openvswitch"] -> Exec['create_bridge']
-
-
 
 }

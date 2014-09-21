@@ -1,75 +1,39 @@
 class compute_pd::firewall {
 
-#    exec { "purge default firewall":
-#        command => "/sbin/iptables -F && /sbin/iptables-save > /etc/sysconfig/iptables && /sbin/service iptables restart",
-#        onlyif  => "/usr/bin/test `/bin/grep \"Firewall configuration written by\" /etc/sysconfig/iptables | /usr/bin/wc -l` -gt 0",
-#        user    => 'root',
-#    }
- 
-##    /* Make the firewall persistent */
-#    exec { "persist-firewall":
-#        command     => "/bin/echo \"# This file is managed by puppet. Do not modify manually.\" > /etc/sysconfig/iptables && /sbin/iptables-save >> /etc/sysconfig/iptables", 
-#        refreshonly => true,
-#        user        => 'root',
-#    }
- 
-#    firewall { '000 INPUT allow related and established':
-#        state => ['RELATED', 'ESTABLISHED'],
-#        action => 'accept',
-#        proto => 'all',
-#    }
+  exec { "open-port-5900":
+    command     => "iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 5900:5999 -j ACCEPT",
+    unless      => "iptables-save | grep 5900 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
+    notify => Exec["ip-tables-save"]
+  }
 
-#    firewall { "001 accept all icmp requests":
-#        proto => 'icmp',
-#        action  => 'accept',
-#    }
- 
-#    firewall { '002 INPUT allow loopback':
-#        iniface => 'lo',
-#        chain   => 'INPUT',
-#        action => 'accept',
-#    }
- 
-#    firewall { '100 allow ssh':
-#    	state => ['NEW'],
-#    	proto => 'tcp',
-#    	dport => '22',
-#        action => 'accept',
-#    }
+  exec { "open-port-16509":
+    command     => "iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 16509 -j ACCEPT",
+    unless      => "iptables-save | grep 16509 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
+    notify => Exec["ip-tables-save"]
+  }
 
-    firewall { '100 allow VNC':
-    	state => ['NEW'],
-    	proto => 'tcp',
-    	dport => '5900-5999',
-        action => 'accept',
-    }
+  exec { "open-port-49152":
+    command     => "iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 49152:49261 -j ACCEPT",
+    unless      => "iptables-save | grep 49152 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
+    notify => Exec["ip-tables-save"]
+  }
 
-    firewall { '101 allow libvirtd TCP ports':
-        state => ['NEW'],
-        proto => 'tcp',
-        dport => '16509',
-        action => 'accept',
-    }
+  exec { "ip-tables-save":
+    command => "iptables-save > /etc/sysconfig/iptables",
+    refreshonly => true,
+    notify      => Service["iptables"],
+  }
 
-    firewall { '102 libvirtd ephemeral ports':
-        state => ['NEW'],
-        proto => 'tcp',
-        dport => '49152-49261',
-        action => 'accept',
-    }
+  service { "iptables":
+    ensure      => running,
+    enable      => true,
+    hasstatus   => true,
+    hasrestart  => true,
+  }
 
-
-#    firewall { "998 deny all other requests":
-#        action   => 'reject',
-#        proto  => 'all',
-#        reject => 'icmp-host-prohibited',
-#    }
- 
-#    firewall { "999 deny all other requests":
-#        chain  => 'FORWARD',
-#        action   => 'reject',
-#        proto  => 'all',
-#        reject => 'icmp-host-prohibited',
-#    }
+  service { "ip6tables":
+    ensure      => stopped,
+    enable      => false,
+  }
 
 }

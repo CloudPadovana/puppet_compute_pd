@@ -6,5 +6,4 @@ summary 'OpenStack Havana Compute Node configuration for the Cloud area Padovana
 description  'Puppet module to install and configure an Openstack Havana Compute node for the CloudArea Padovana'
 
 ## Add dependencies
-dependency 'puppetlabs/firewall', '>=0.0.4'
 dependency 'duritong/sysctl', '>=0.0.2'

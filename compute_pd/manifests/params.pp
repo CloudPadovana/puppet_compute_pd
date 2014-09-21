@@ -40,6 +40,7 @@ class compute_pd::params {
   }
 
   $cafile               = '/etc/grid-security/certificates/INFN-CA-2006.pem'
+  $volume_glusterfs     = 'volume-nova-prod'
   $glance_api_servers   = 'https://cloud-areapd.pd.infn.it:9292'
   $glance_protocol      = 'https'
   $glance_api_insecure  = true
