@@ -26,11 +26,6 @@ class compute_pd::configure {
         require    => Package["openstack-neutron-openvswitch"],
    }
 
-#   file { '/etc/grid-security/certificates/INFN-CA-2006.pem':
-#        ensure   => present,
-#        require    => Package["ca_INFN-CA-2006"],
-#   }
-
    define do_config ($conf_file, $section, $param, $value) {
 	exec { "${name}":
 		command     => "openstack-config --set ${conf_file} ${section} ${param} \"${value}\"",
@@ -55,7 +50,7 @@ class compute_pd::configure {
     do_config { 'nova_glance_prot': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'glance_protocol', value => $compute_pd::params::glance_protocol, }
     do_config { 'nova_glance_api_servers': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'glance_api_servers', value => $compute_pd::params::glance_api_servers, }
     do_config { 'nova_ssl_ca_file': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'ssl_ca_file', value => $compute_pd::params::cafile, }
-    do_config { 'nova_glance_api_insecure': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'glance_api_insecure', value => $compute_pd::params::glance_api_servers,} 
+    do_config { 'nova_glance_api_insecure': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'glance_api_insecure', value => $compute_pd::params::glance_api_insecure,} 
   } else {
     remove_config { 'nova_cafile': conf_file => '/etc/nova/nova.conf', section => 'keystone_authtoken', param => 'cafile', value => $compute_pd::params::cafile, }
     remove_config { 'nova_neutron_ca_cert': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'neutron_ca_certificates_file', value => $compute_pd::params::cafile, }
@@ -88,7 +83,7 @@ class compute_pd::configure {
   do_config { 'nova_novncproxy': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'novncproxy_base_url', value => $compute_pd::params::novncproxy_base_url, }
   do_config { 'nova_glance': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'glance_host', value => $compute_pd::params::glance_host, }
   do_config { 'nova_compute_driver': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'compute_driver', value => $compute_pd::params::compute_driver, }
-  do_config { 'nova_api_paste_conf': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'api_paste_config ', value => $compute_pd::params::nova_api_paste_config, }
+  do_config { 'nova_api_paste_conf': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'api_paste_config ', value => $compute_pd::params::nova_api_paste_conf, }
   do_config { 'nova_network_api': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'network_api_class', value => $compute_pd::params::network_api_class, }
   do_config { 'nova_neutron_url': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'neutron_url', value => $compute_pd::params::neutron_url, }
   do_config { 'nova_neutron_auth_strategy': conf_file => '/etc/nova/nova.conf', section => 'DEFAULT', param => 'neutron_auth_strategy', value => $compute_pd::params::auth_strategy, }
@@ -121,7 +116,7 @@ class compute_pd::configure {
 # neutron.conf
 
   do_config { 'neutron_core_plugin': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'core_plugin', value => $compute_pd::params::core_plugin, }
-  do_config { 'neutron_api_paste_config': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'api_paste_config', value => $compute_pd::params::api_paste_conf, }
+  do_config { 'neutron_api_paste_conf': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'api_paste_config', value => $compute_pd::params::neutron_api_paste_conf, }
   do_config { 'neutron_rpc_backend': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'rpc_backend', value => $compute_pd::params::neutron_rpc_backend, }
   do_config { 'neutron_rabbit_hosts': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'rabbit_hosts', value => $compute_pd::params::rabbit_hosts, }
   do_config { 'neutron_auth_strategy': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'auth_strategy', value => $compute_pd::params::auth_strategy, }
@@ -131,10 +126,14 @@ class compute_pd::configure {
   do_config { 'neutron_auth_host': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'auth_host', value => $compute_pd::params::auth_host, }
   do_config { 'neutron_admin_user': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'admin_user', value => $compute_pd::params::neutron_admin_user, }
   do_config { 'neutron_admin_pass': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'admin_password', value => $compute_pd::params::neutron_admin_pass, }
-  do_config { 'neutron_auth_url': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'auth_url', value => $compute_pd::params::auth_url, }
+  do_config { 'neutron_auth_url': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'auth_url', value => $compute_pd::params::neutron_adm_auth_url, }
   do_config { 'neutron_admin_tenant_name': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'admin_tenant_name', value => $compute_pd::params::admin_tenant_name, }
   do_config { 'neutron_agent_root_helper': conf_file => '/etc/neutron/neutron.conf', section => 'agent', param => 'root_helper', value => $compute_pd::params::root_helper, }
   do_config { 'neutron_db_conn': conf_file => '/etc/neutron/neutron.conf', section => 'database', param => 'connection', value => $compute_pd::params::neutron_db_conn, }
+  do_config { 'neutron_auth_protocol': conf_file => '/etc/neutron/neutron.conf', section => 'keystone_authtoken', param => 'auth_protocol', value => $compute_pd::params::auth_protocol, }
+  do_config { 'neutron_agent_dt': conf_file => '/etc/neutron/neutron.conf', section => 'DEFAULT', param => 'agent_down_time', value => $compute_pd::params::agent_down_time, }
+  do_config { 'neutron_report_interval': conf_file => '/etc/neutron/neutron.conf', section => 'agent', param => 'report_interval', value => $compute_pd::params::report_interval, }
+
 
 # neutron/ovs_neutron_plugin
 

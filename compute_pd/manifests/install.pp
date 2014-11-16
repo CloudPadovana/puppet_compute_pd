@@ -9,11 +9,12 @@ class compute_pd::install {
   package { $computepackages: ensure => "installed" }
 
   yumrepo { "glusterfs-epel":
-    baseurl             => "http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$::operatingsystemrelease/$::architecture/",
-    descr               => "GlusterFS is a clustered file-system capable of scaling to several petabytes",
-    enabled             => 1,
-    gpgcheck            => 1,
-    gpgkey              => 'http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key',
+    baseurl		=> "http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$::operatingsystemrelease/$::architecture/",
+    descr		=> "GlusterFS is a clustered file-system capable of scaling to several petabytes",
+    enabled		=> 1,
+    gpgcheck		=> 1,
+#    skip_if_unavailable => 1,
+    gpgkey		=> 'http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key',
   }
 
   yumrepo { "glusterfs-noarch-epel":
@@ -21,6 +22,7 @@ class compute_pd::install {
     descr               => "GlusterFS is a clustered file-system capable of scaling to several petabytes",
     enabled             => 1,
     gpgcheck            => 1,
+#    skip_if_unavailable => 1,
     gpgkey              => 'http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key',
   }
 

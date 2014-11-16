@@ -2,11 +2,12 @@ class compute_pd::params {
 
 # NOVA
 
-# config_ssl can be true or false
-  $config_ssl		= false
+# config_ssl - can be true or false
+  $config_ssl		= true
+
 
   if $config_ssl {
-    $auth_host		= 'cloud-areapd.pd.infn.it'
+    $auth_host		  = 'cloud-areapd.pd.infn.it'
     $auth_protocol        = 'https'
     $neutron_adm_auth_url = 'https://cloud-areapd.pd.infn.it:35357/v2.0'
     $novncproxy_base_url  = 'https://cloud-areapd.pd.infn.it:6080/vnc_auto.html'
@@ -40,20 +41,21 @@ class compute_pd::params {
   }
 
   $cafile               = '/etc/grid-security/certificates/INFN-CA-2006.pem'
-  $volume_glusterfs     = 'volume-nova-prod'
+  $volume_glusterfs	= 'volume-nova-prod'
   $glance_api_servers   = 'https://cloud-areapd.pd.infn.it:9292'
   $glance_protocol      = 'https'
   $glance_api_insecure  = true
-  $nova_db_conn		= 'mysql://nova:XXXXXXXXX@192.168.60.10/nova'
+  $nova_db_conn		= 'mysql://nova_prod:XXXXXXXXXXXXXXX@192.168.60.10/nova_prod'
   $auth_strategy 	= 'keystone'
   $auth_port 		= '35357'
   $nova_admin_user 	= 'nova'
   $admin_tenant_name 	= 'services'
-  $nova_admin_password	= 'XXXXXXXX'
+  $nova_admin_password	= 'XXXXXXX'
   $nova_rpc_backend 	= 'nova.openstack.common.rpc.impl_kombu'
-  $rabbit_hosts 	= '192.168.60.41:5672,192.168.60.44:5672'
+  $rabbit_hosts 	= '192.168.60.100:5672,192.168.60.101:5672'
   $live_migration_flag 	= 'VIR_MIGRATE_UNDEFINE_SOURCE,VIR_MIGRATE_PEER2PEER,VIR_MIGRATE_LIVE'
-  $my_ip		= $::ipaddress_eth0
+#  $my_ip		= $::ipaddress_eth0
+  $my_ip               = $::ip_manag
   $vnc_enabled 		= True
   $vncserver_listen 	= '0.0.0.0'
   $libvirt_vif_driver	= 'nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver'
@@ -69,7 +71,8 @@ class compute_pd::params {
   $libvirt_inject_pass  = true
   $libvirt_inject_key 	= true
   $libvirt_inject_part	= '-1'
-  $neutron_md_p_sh_sec	= 'XXXXXXXXX'
+#metadata_shared_secret
+  $neutron_md_p_sh_sec	= 'XXXXXXX'
   $rabbit_ha_queues 	= True
   $cpu_allocation_ratio = '4.0'
   $libvirt_cpu_mode 	= 'custom'
@@ -85,9 +88,11 @@ class compute_pd::params {
   $neutron_api_paste_conf = '/etc/neutron/api-paste.ini'
   $neutron_rpc_backend	= 'neutron.openstack.common.rpc.impl_kombu'
   $root_helper 		= "sudo neutron-rootwrap /etc/neutron/rootwrap.conf"
-  $neutron_db_conn	=  "mysql://neutron:XXXXXXXXX@192.168.60.10/neutron"
+  $neutron_db_conn	=  "mysql://neutron_prod:XXXXXXXXXXX@192.168.60.10/neutron_prod"
   $dhcp_agents_per_net	= 2
   $dhcp_lease_duration 	= 86400
+  $agent_down_time      = 75
+  $report_interval      = 30
 
 # OVS_NEUTRON
 
@@ -96,7 +101,8 @@ class compute_pd::params {
   $enable_tunneling 	= True
   $integration_bridge 	= 'br-int'
   $tunnel_bridge 	= 'br-tun'
-  $local_ip 		= $::ipaddress_eth1
+#  $local_ip 		= $::ipaddress_eth1
+  $local_ip            = $::ip_data
   $neutron_firewall_driver = 'neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver'
 
 # NEUTRON API-PASTE

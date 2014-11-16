@@ -1,8 +1,8 @@
 class compute_pd::firewall {
 
   exec { "open-port-5900":
-    command     => "iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 5900:5999 -j ACCEPT",
-    unless      => "iptables-save | grep 5900 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
+    command	=> "iptables -I INPUT -p tcp -m state --state NEW -m tcp --dport 5900:5999 -j ACCEPT",
+    unless	=> "iptables-save | grep 5900 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
     notify => Exec["ip-tables-save"]
   }
 
@@ -17,11 +17,11 @@ class compute_pd::firewall {
     unless      => "iptables-save | grep 49152 | grep INPUT | grep ACCEPT | grep NEW | wc -l | xargs test 1 -eq",
     notify => Exec["ip-tables-save"]
   }
-
+ 
   exec { "ip-tables-save":
     command => "iptables-save > /etc/sysconfig/iptables",
     refreshonly => true,
-    notify      => Service["iptables"],
+    notify 	=> Service["iptables"],
   }
 
   service { "iptables":
@@ -35,5 +35,4 @@ class compute_pd::firewall {
     ensure      => stopped,
     enable      => false,
   }
-
 }
