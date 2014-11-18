@@ -67,18 +67,15 @@ do
   esac
 done
 
-if [ "$NUM" -eq "$OK" ]; then
+PROBLEMATICVMs=`expr $WARN + $CRIT`    
+
+if [ "$PROBLEMATICVMs" -gt 5 ]; then
+  EXITVAL=1 #Status 1 = WARNING (yellow)  
+else
   EXITVAL=0 #Status 0 = OK (green)
 fi
 
-if [ "$WARN" -gt 0 ]; then
-  EXITVAL=1 #Status 1 = WARNING (yellow)
-fi
 
-if [ "$CRIT" -gt 0 ]; then
-#  EXITVAL=2 #Status 2 = CRITICAL (red)
-  EXITVAL=1 #Status 1 = WARNING (yellow)
-fi
 
 echo hosts:$NUM OK:$OK WARN:$WARN CRIT:$CRIT - $LIST
 
