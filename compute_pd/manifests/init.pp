@@ -15,6 +15,9 @@ class compute_pd {
 # do configuration
   class {'compute_pd::configure':}
 
+# do passwdless access
+  class {'compute_pd::pwl_access':}
+
 # disable SELinux
 
   exec { "setenforce 0":
@@ -179,6 +182,7 @@ class compute_pd {
   Class['compute_pd::configure'] -> File['/etc/neutron/plugin.ini']
   Class['compute_pd::configure'] -> Cron['nagios_check_ovs']
   Class['compute_pd::configure'] -> Cron['nagios_check_kvm']
+  Class['compute_pd::configure'] -> Class['compute_pd::pwl_access']
   Service["openvswitch"] -> Exec['create_bridge']
 
 
