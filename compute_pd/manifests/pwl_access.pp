@@ -13,20 +13,20 @@ class compute_pd::pwl_access {
         require	=> Package["openstack-nova-common"],
   }
 
-  file { 
-	"nova_sshdir":
+  file {"nova_sshdir":
             ensure  => "directory",
             path    => "$home_dir/.ssh",
             owner   => nova,
             group   => nova,
-            mode    => 0700;
+            mode    => 0700,
+  }
 
+  File["nova_sshdir"] -> file {
 	"config_ssh":
             path    => "$home_dir/.ssh/config",
 	    content => "$config",
             owner   => nova,
-            group   => nova,
-	    require => File['nova_sshdir'];
+            group   => nova;
 
 	"private_key":
 	    source  => 'puppet:///modules/test_access/id_rsa_cld-ctrl-01',
@@ -39,7 +39,13 @@ class compute_pd::pwl_access {
             path    => "$home_dir/.ssh/id_rsa.pub",
             content => "$pub_key",
             owner   => nova,
-            group   => nova,
-            require => File['nova_sshdir'];
-        }
+            group   => nova;
+
+        "authorized_keys":
+            path    => "$home_dir/.ssh/authorized_keys",
+            content => "",
+            replace => "no",
+            ensure  => present;
+        
+	}
 }
